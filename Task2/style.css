@@ -120,6 +120,15 @@ body {
     margin: 0;
 }
 
+/* Mensaje de carga */
+.loading-message {
+    text-align: center;
+    padding: var(--spacing-large);
+    color: var(--text-light);
+    font-size: 1.1rem;
+    grid-column: 1 / -1;
+}
+
 /* Footer */
 .footer {
     background-color: var(--primary-color);
