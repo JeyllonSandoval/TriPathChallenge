@@ -1,3 +1,4 @@
+import { obtenerSubRazas } from '../API/config.js';
 /**
  * Componente de tarjeta para mostrar una raza de perro
  */
@@ -30,15 +31,71 @@ export class DogCard {
             console.error(`Error al cargar la imagen para ${this.data.name}`);
             imagen.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="250" height="250"%3E%3Crect fill="%23e0e0e0" width="250" height="250"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="14" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImagen no disponible%3C/text%3E%3C/svg%3E';
         });
+        // Overlay para mostrar sub-razas en hover
+        const overlay = document.createElement('div');
+        overlay.className = 'dog-overlay';
+        overlay.innerHTML = '<p class="dog-overlay-loading">Cargando sub-razas...</p>';
         // Nombre de la raza
         const nombre = document.createElement('h3');
         nombre.className = 'dog-name';
         nombre.textContent = this.data.name;
         // Construir la estructura
         contenedorImagen.appendChild(imagen);
+        contenedorImagen.appendChild(overlay);
         tarjeta.appendChild(contenedorImagen);
         tarjeta.appendChild(nombre);
+        // Agregar eventos de hover para mostrar sub-razas
+        this.configurarHover(contenedorImagen, overlay);
         return tarjeta;
+    }
+    /**
+     * Configura los eventos de hover para mostrar las sub-razas
+     * @param contenedorImagen - Contenedor de la imagen
+     * @param overlay - Elemento overlay para mostrar sub-razas
+     */
+    configurarHover(contenedorImagen, overlay) {
+        let subRazasCargadas = false;
+        let cargandoSubRazas = false;
+        contenedorImagen.addEventListener('mouseenter', async () => {
+            overlay.classList.add('active');
+            // Solo cargar sub-razas una vez
+            if (!subRazasCargadas && !cargandoSubRazas && this.data.breedKey) {
+                cargandoSubRazas = true;
+                try {
+                    const subRazas = await obtenerSubRazas(this.data.breedKey);
+                    subRazasCargadas = true;
+                    cargandoSubRazas = false;
+                    if (subRazas.length > 0) {
+                        // Formatear nombres de sub-razas
+                        const subRazasFormateadas = subRazas.map(subRaza => {
+                            return subRaza
+                                .split('-')
+                                .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+                                .join(' ');
+                        });
+                        overlay.innerHTML = `
+                            <div class="dog-overlay-content">
+                                <h4 class="dog-overlay-title">Sub-razas:</h4>
+                                <ul class="dog-overlay-list">
+                                    ${subRazasFormateadas.map(subRaza => `<li>${subRaza}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }
+                    else {
+                        overlay.innerHTML = '<p class="dog-overlay-empty">No hay sub-razas disponibles</p>';
+                    }
+                }
+                catch (error) {
+                    console.error(`Error al cargar sub-razas para ${this.data.name}:`, error);
+                    overlay.innerHTML = '<p class="dog-overlay-error">Error al cargar sub-razas</p>';
+                    cargandoSubRazas = false;
+                }
+            }
+        });
+        contenedorImagen.addEventListener('mouseleave', () => {
+            overlay.classList.remove('active');
+        });
     }
     /**
      * Obtiene el elemento HTML de la tarjeta
