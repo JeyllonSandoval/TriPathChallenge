@@ -1,16 +1,23 @@
+// Task 1
+// Verificar si un elemento es un carácter especial
 function isSpecialCharacter(element: string | number): boolean {
     return typeof element === 'string' && /[^a-zA-Z0-9]/.test(element);
 }
 
+// Invertir un array manteniendo los caracteres especiales en sus posiciones originales
 function reverseArrayKeepingSpecialChars(arrayToReverse: (string | number)[]): (string | number)[] {
+    // Map para almacenar las posiciones de los caracteres especiales
     const specialPositions = new Map<number, string | number>();
 
+    // Recorrer el array y almacenar las posiciones de los caracteres especiales
     arrayToReverse.forEach((element, index) => {
         if (isSpecialCharacter(element)) specialPositions.set(index, element);
     });
 
+    // Filtrar los caracteres especiales y invertir el array
     const reversed = arrayToReverse.filter(element => !isSpecialCharacter(element)).reverse();
 
+    // Recorrer el array y devolver los caracteres especiales en sus posiciones originales y los caracteres no especiales en orden inverso
     let i = 0;
     return arrayToReverse.map((_, idx): (string | number) =>
         specialPositions.has(idx)
