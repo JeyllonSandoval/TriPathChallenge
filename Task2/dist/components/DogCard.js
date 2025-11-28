@@ -16,8 +16,10 @@ export class DogCard {
      * @returns Elemento HTMLElement de la tarjeta
      */
     crearElemento() {
-        const tarjeta = document.createElement('div');
+        const tarjeta = document.createElement('article');
         tarjeta.className = 'dog-card';
+        tarjeta.setAttribute('role', 'listitem');
+        tarjeta.setAttribute('tabindex', '0');
         // Contenedor de la imagen
         const contenedorImagen = document.createElement('div');
         contenedorImagen.className = 'dog-image-container';
@@ -29,16 +31,27 @@ export class DogCard {
         // Agregar evento para manejar errores de carga de imagen
         imagen.addEventListener('error', () => {
             console.error(`Error al cargar la imagen para ${this.data.name}`);
-            imagen.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="250" height="250"%3E%3Crect fill="%23e0e0e0" width="250" height="250"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="14" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImagen no disponible%3C/text%3E%3C/svg%3E';
+            // Placeholder SVG minimalista
+            const svgPlaceholder = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+                    <rect width="320" height="320" fill=var(--color-beige)"/>
+                    <circle cx="160" cy="140" r="25" fill="none" stroke=var(--color-teal) stroke-width="1.5" opacity="0.4"/>
+                    <path d="M 120 200 Q 160 180 200 200" stroke=var(--color-teal) stroke-width="1.5" fill="none" opacity="0.4"/>
+                </svg>
+            `;
+            imagen.src = 'data:image/svg+xml,' + encodeURIComponent(svgPlaceholder);
         });
         // Overlay para mostrar sub-razas en hover
         const overlay = document.createElement('div');
         overlay.className = 'dog-overlay';
-        overlay.innerHTML = '<p class="dog-overlay-loading">Cargando sub-razas...</p>';
+        overlay.setAttribute('role', 'tooltip');
+        overlay.setAttribute('aria-label', 'Sub-razas del perro');
+        overlay.innerHTML = '<div class="dog-overlay-content"><p class="dog-overlay-loading">Cargando sub-razas...</p></div>';
         // Nombre de la raza
         const nombre = document.createElement('h3');
         nombre.className = 'dog-name';
         nombre.textContent = this.data.name;
+        nombre.setAttribute('aria-label', `Raza de perro: ${this.data.name}`);
         // Construir la estructura
         contenedorImagen.appendChild(imagen);
         contenedorImagen.appendChild(overlay);
@@ -75,7 +88,7 @@ export class DogCard {
                         });
                         overlay.innerHTML = `
                             <div class="dog-overlay-content">
-                                <h4 class="dog-overlay-title">Sub-razas:</h4>
+                                <h4 class="dog-overlay-title">Sub-razas</h4>
                                 <ul class="dog-overlay-list">
                                     ${subRazasFormateadas.map(subRaza => `<li>${subRaza}</li>`).join('')}
                                 </ul>
@@ -83,12 +96,20 @@ export class DogCard {
                         `;
                     }
                     else {
-                        overlay.innerHTML = '<p class="dog-overlay-empty">No hay sub-razas disponibles</p>';
+                        overlay.innerHTML = `
+                            <div class="dog-overlay-content">
+                                <p class="dog-overlay-empty">Sin sub-razas</p>
+                            </div>
+                        `;
                     }
                 }
                 catch (error) {
                     console.error(`Error al cargar sub-razas para ${this.data.name}:`, error);
-                    overlay.innerHTML = '<p class="dog-overlay-error">Error al cargar sub-razas</p>';
+                    overlay.innerHTML = `
+                        <div class="dog-overlay-content">
+                            <p class="dog-overlay-error">Error al cargar sub-razas</p>
+                        </div>
+                    `;
                     cargandoSubRazas = false;
                 }
             }
