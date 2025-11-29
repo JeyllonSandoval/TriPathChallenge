@@ -98,3 +98,26 @@ export async function obtenerSubRazas(raza) {
         return [];
     }
 }
+/**
+ * Función para obtener todas las razas con sus sub-razas
+ * @returns Promise con un array de razas y sus sub-razas
+ */
+export async function obtenerTodasLasRazasConSubRazas() {
+    try {
+        const respuesta = await fetch(API_ENDPOINTS.ALL_BREEDS);
+        const datos = await respuesta.json();
+        if (datos.status === 'success' && typeof datos.message === 'object') {
+            const razas = datos.message;
+            // Convertir el objeto en un array de BreedWithSubBreeds
+            return Object.entries(razas).map(([breed, subBreeds]) => ({
+                breed,
+                subBreeds: subBreeds || []
+            }));
+        }
+        return [];
+    }
+    catch (error) {
+        console.error('Error al obtener todas las razas con sub-razas:', error);
+        return [];
+    }
+}

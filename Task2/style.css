@@ -13,7 +13,14 @@
     --color-beige: #F5EFEB;
     --color-white: #FFFFFF;
     
-
+    /* Colores semánticos */
+    --color-foreground: var(--color-navy);
+    --color-background: var(--color-beige);
+    --color-card: var(--color-white);
+    --color-card-foreground: var(--color-navy);
+    --color-muted: var(--color-teal);
+    --color-border: var(--color-sky-blue);
+    --color-primary: var(--color-teal);
     
     /* Sombras */
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
@@ -62,7 +69,7 @@ body {
 .header {
     background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-teal) 100%);
     color: white;
-    padding: var(--spacing-2xl) 0;
+    padding: var(--spacing-md) 0;
     box-shadow: var(--shadow-md);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -71,7 +78,6 @@ body {
     font-size: clamp(1.875rem, 4vw, 3rem);
     font-weight: 700;
     letter-spacing: -0.025em;
-    margin-bottom: var(--spacing-sm);
     background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.9) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -87,7 +93,7 @@ body {
 /* Main content */
 .main {
     flex: 1;
-    padding: var(--spacing-2xl) 0;
+    padding: var(--spacing-lg) 0;
 }
 
 /* Grid de perros */
@@ -383,4 +389,190 @@ body {
 
 .dog-overlay::-webkit-scrollbar-thumb:hover {
     background: var(--color-teal);
+}
+
+/* Navegación */
+.navigation {
+    display: flex;
+    flex-direction: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.nav-button {
+    text-align: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    width: 10.5rem;
+    background-color: var(--color-white);
+    color: var(--color-navy);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all var(--transition-base);
+    border: 1px solid var(--color-sky-blue);
+    cursor: pointer;
+    display: inline-block;
+}
+
+.nav-button:hover {
+    background-color: var(--color-sky-blue);
+    color: var(--color-navy);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-button-active {
+    background-color: var(--color-teal);
+    color: var(--color-white);
+    border-color: var(--color-teal);
+}
+
+.nav-button-active:hover {
+    background-color: var(--color-navy);
+    color: var(--color-white);
+}
+
+/* Sección de tabla */
+.table-section {
+    width: 100%;
+    padding: var(--spacing-md) 0;
+}
+
+/* Contenedor de tabla */
+.dog-table-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-sky-blue);
+}
+
+/* Tabla */
+.dog-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+/* Encabezado de tabla */
+.dog-table-header {
+    padding: var(--spacing-lg);
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-navy);
+    background-color: var(--color-sky-blue);
+    border-bottom: 2px solid var(--color-teal);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.dog-table-header:first-child {
+    border-top-left-radius: var(--radius-lg);
+}
+
+.dog-table-header:last-child {
+    border-top-right-radius: var(--radius-lg);
+}
+
+/* Filas de tabla */
+.dog-table-row {
+    border-bottom: 1px solid var(--color-sky-blue);
+    transition: background-color var(--transition-fast);
+}
+
+.dog-table-row:hover {
+    background-color: var(--color-beige);
+}
+
+.dog-table-row:last-child {
+    border-bottom: none;
+}
+
+/* Celdas de tabla */
+.dog-table-cell {
+    padding: var(--spacing-lg);
+    color: var(--color-navy);
+    vertical-align: top;
+}
+
+.dog-table-breed {
+    font-weight: 500;
+    color: var(--color-navy);
+    min-width: 200px;
+}
+
+.dog-table-subbreeds {
+    color: var(--color-teal);
+}
+
+.dog-table-empty {
+    color: rgba(47, 65, 86, 0.4);
+    font-style: italic;
+}
+
+/* Lista de sub-razas */
+.dog-table-subbreeds-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.dog-table-subbreed-item {
+    padding: var(--spacing-xs) 0;
+    font-size: 0.8125rem;
+    color: var(--color-teal);
+}
+
+.dog-table-subbreed-item::before {
+    content: '•';
+    margin-right: var(--spacing-sm);
+    color: var(--color-sky-blue);
+}
+
+/* Responsive para tabla */
+@media (max-width: 768px) {
+    .navigation {
+        align-items: stretch;
+    }
+
+    .nav-button {
+        text-align: center;
+    }
+
+    .dog-table-container {
+        border-radius: var(--radius-sm);
+    }
+
+    .dog-table-header,
+    .dog-table-cell {
+        padding: var(--spacing-md);
+        font-size: 0.8125rem;
+    }
+
+    .dog-table-breed {
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dog-table-header,
+    .dog-table-cell {
+        padding: var(--spacing-sm);
+        font-size: 0.75rem;
+    }
+
+    .dog-table-breed {
+        min-width: 120px;
+    }
+
+    .dog-table-subbreed-item {
+        font-size: 0.75rem;
+    }
 }

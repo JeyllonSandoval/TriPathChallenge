@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Descubre las diferentes razas de perros del mundo">
-    <title>Glimpse of Wonders - Razas de Perros</title>
+    <meta name="description" content="Busca y explora todas las razas de perros y sub-razas">
+    <title>Glimpse of Wonders - Búsqueda de Razas</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="header">
         <div class="container">
             <h1 class="title">Glimpse of Wonders</h1>
-            <p class="subtitle">Descubre las diferentes razas de perros</p>
+            <p class="subtitle">Explora todas las razas de perros y sub-razas</p>
         </div>
     </header>
 
     <main class="main">
         <div class="container">
             <nav class="navigation">
-                <a href="index.html" class="nav-button nav-button-active">Ver Galería</a>
-                <a href="search.html" class="nav-button">Ver Tabla</a>
+                <a href="index.html" class="nav-button">Ver Galería</a>
+                <a href="search.html" class="nav-button nav-button-active">Ver Tabla</a>
             </nav>
             
-            <section class="dogs-grid" id="dogsGrid" role="list" aria-label="Razas de perros">
-                <!-- carga las razas de perros -->
+            <section class="table-section" id="tableSection" role="region" aria-label="Tabla de razas de perros">
+                <!-- Aquí se cargará la tabla dinámicamente -->
             </section>
         </div>
     </main>
@@ -33,7 +33,7 @@
             <p>Task 2 - Dog API Challenge</p>
         </div>
     </footer>
-    <script type="module" src="dist/main.js"></script>
+    <script type="module" src="dist/search.js"></script>
 </body>
 </html>
 
