@@ -5,9 +5,15 @@ export class DogTable {
     /**
      * Constructor del componente DogTable
      * @param data - Array de razas con sus sub-razas
+     * @param onBreedSortClick - Callback para cuando se hace clic en el header de raza
+     * @param onSubBreedsSortClick - Callback para cuando se hace clic en el header de sub-razas
      */
-    constructor(data) {
+    constructor(data, onBreedSortClick, onSubBreedsSortClick) {
+        this.breedSortOrder = null;
+        this.subBreedsSortOrder = null;
         this.data = data;
+        this.onBreedSortClick = onBreedSortClick;
+        this.onSubBreedsSortClick = onSubBreedsSortClick;
         this.element = this.crearElemento();
     }
     /**
@@ -20,6 +26,52 @@ export class DogTable {
             .split('-')
             .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
             .join(' ');
+    }
+    /**
+     * Crea el icono de ordenamiento
+     * @param order - Orden actual (asc, desc, o null)
+     * @returns Elemento HTML del icono
+     */
+    crearIconoOrdenamiento(order) {
+        const icono = document.createElement('span');
+        icono.className = 'sort-icon';
+        if (order === 'asc') {
+            icono.innerHTML = '↑';
+            icono.setAttribute('aria-label', 'Ordenado ascendente');
+        }
+        else if (order === 'desc') {
+            icono.innerHTML = '↓';
+            icono.setAttribute('aria-label', 'Ordenado descendente');
+        }
+        else {
+            icono.innerHTML = '⇅';
+            icono.setAttribute('aria-label', 'Ordenar');
+            icono.classList.add('sort-icon-inactive');
+        }
+        return icono;
+    }
+    /**
+     * Crea el icono de ordenamiento para sub-razas
+     * @param order - Orden actual
+     * @returns Elemento HTML del icono
+     */
+    crearIconoOrdenamientoSubRazas(order) {
+        const icono = document.createElement('span');
+        icono.className = 'sort-icon';
+        if (order === 'has-subbreeds-first') {
+            icono.innerHTML = '↑';
+            icono.setAttribute('aria-label', 'Con sub-razas primero');
+        }
+        else if (order === 'no-subbreeds-first') {
+            icono.innerHTML = '↓';
+            icono.setAttribute('aria-label', 'Sin sub-razas primero');
+        }
+        else {
+            icono.innerHTML = '⇅';
+            icono.setAttribute('aria-label', 'Ordenar por sub-razas');
+            icono.classList.add('sort-icon-inactive');
+        }
+        return icono;
     }
     /**
      * Crea el elemento HTML de la tabla
@@ -36,13 +88,61 @@ export class DogTable {
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
         const headerBreed = document.createElement('th');
-        headerBreed.className = 'dog-table-header';
-        headerBreed.textContent = 'Raza';
+        headerBreed.className = 'dog-table-header dog-table-header-sortable';
         headerBreed.setAttribute('scope', 'col');
+        headerBreed.setAttribute('role', 'button');
+        headerBreed.setAttribute('tabindex', '0');
+        headerBreed.setAttribute('aria-label', 'Ordenar por raza');
+        const breedContainer = document.createElement('div');
+        breedContainer.style.display = 'flex';
+        breedContainer.style.alignItems = 'center';
+        breedContainer.style.gap = 'var(--spacing-sm)';
+        breedContainer.style.width = '100%';
+        breedContainer.style.justifyContent = 'space-between';
+        const breedText = document.createElement('span');
+        breedText.textContent = 'Raza';
+        const breedIcon = this.crearIconoOrdenamiento(this.breedSortOrder);
+        breedContainer.appendChild(breedText);
+        breedContainer.appendChild(breedIcon);
+        headerBreed.appendChild(breedContainer);
+        // Agregar evento de clic
+        headerBreed.addEventListener('click', () => {
+            this.onBreedSortClick();
+        });
+        headerBreed.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                this.onBreedSortClick();
+            }
+        });
         const headerSubBreeds = document.createElement('th');
-        headerSubBreeds.className = 'dog-table-header';
-        headerSubBreeds.textContent = 'Sub-razas';
+        headerSubBreeds.className = 'dog-table-header dog-table-header-sortable';
         headerSubBreeds.setAttribute('scope', 'col');
+        headerSubBreeds.setAttribute('role', 'button');
+        headerSubBreeds.setAttribute('tabindex', '0');
+        headerSubBreeds.setAttribute('aria-label', 'Ordenar por sub-razas');
+        const subBreedsContainer = document.createElement('div');
+        subBreedsContainer.style.display = 'flex';
+        subBreedsContainer.style.alignItems = 'center';
+        subBreedsContainer.style.gap = 'var(--spacing-sm)';
+        subBreedsContainer.style.width = '100%';
+        subBreedsContainer.style.justifyContent = 'space-between';
+        const subBreedsText = document.createElement('span');
+        subBreedsText.textContent = 'Sub-razas';
+        const subBreedsIcon = this.crearIconoOrdenamientoSubRazas(this.subBreedsSortOrder);
+        subBreedsContainer.appendChild(subBreedsText);
+        subBreedsContainer.appendChild(subBreedsIcon);
+        headerSubBreeds.appendChild(subBreedsContainer);
+        // Agregar evento de clic
+        headerSubBreeds.addEventListener('click', () => {
+            this.onSubBreedsSortClick();
+        });
+        headerSubBreeds.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                this.onSubBreedsSortClick();
+            }
+        });
         headerRow.appendChild(headerBreed);
         headerRow.appendChild(headerSubBreeds);
         thead.appendChild(headerRow);
@@ -106,6 +206,35 @@ export class DogTable {
         }
         else {
             this.element = nuevoElemento;
+        }
+    }
+    /**
+     * Actualiza los iconos de ordenamiento sin recrear toda la tabla
+     * @param breedSort - Ordenamiento actual de razas
+     * @param subBreedsSort - Ordenamiento actual de sub-razas
+     */
+    actualizarOrdenamiento(breedSort, subBreedsSort) {
+        this.breedSortOrder = breedSort;
+        this.subBreedsSortOrder = subBreedsSort;
+        // Actualizar los iconos en los headers
+        const headers = this.element.querySelectorAll('.dog-table-header-sortable');
+        if (headers.length >= 2) {
+            // Actualizar icono de raza
+            const headerBreed = headers[0];
+            const breedContainer = headerBreed.querySelector('div');
+            const breedIcon = breedContainer?.querySelector('.sort-icon');
+            if (breedIcon && breedContainer) {
+                const nuevoIcono = this.crearIconoOrdenamiento(breedSort);
+                breedContainer.replaceChild(nuevoIcono, breedIcon);
+            }
+            // Actualizar icono de sub-razas
+            const headerSubBreeds = headers[1];
+            const subBreedsContainer = headerSubBreeds.querySelector('div');
+            const subBreedsIcon = subBreedsContainer?.querySelector('.sort-icon');
+            if (subBreedsIcon && subBreedsContainer) {
+                const nuevoIcono = this.crearIconoOrdenamientoSubRazas(subBreedsSort);
+                subBreedsContainer.replaceChild(nuevoIcono, subBreedsIcon);
+            }
         }
     }
     /**

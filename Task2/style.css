@@ -434,6 +434,48 @@ body {
     color: var(--color-white);
 }
 
+/* Contenedor de búsqueda */
+.search-container {
+    width: 100%;
+    margin-bottom: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.search-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-navy);
+    text-align: left;
+}
+
+.search-input {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 0.875rem;
+    color: var(--color-navy);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-sky-blue);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.search-input::placeholder {
+    color: rgba(47, 65, 86, 0.4);
+}
+
+.search-input:focus {
+    border-color: var(--color-teal);
+    box-shadow: 0 0 0 3px rgba(86, 124, 141, 0.1);
+}
+
+.search-input:hover {
+    border-color: var(--color-teal);
+}
+
 /* Sección de tabla */
 .table-section {
     width: 100%;
@@ -476,6 +518,60 @@ body {
 
 .dog-table-header:last-child {
     border-top-right-radius: var(--radius-lg);
+}
+
+/* Header ordenable */
+.dog-table-header-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--transition-fast);
+    position: relative;
+}
+
+.dog-table-header-sortable > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.dog-table-header-sortable:hover {
+    background-color: var(--color-teal);
+    color: var(--color-white);
+}
+
+.dog-table-header-sortable:focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: -2px;
+}
+
+.dog-table-header-sortable:active {
+    background-color: var(--color-navy);
+}
+
+/* Icono de ordenamiento */
+.sort-icon {
+    font-size: 0.875rem;
+    color: var(--color-navy);
+    transition: color var(--transition-fast);
+    font-weight: bold;
+    min-width: 1.2rem;
+    text-align: center;
+    display: inline-block;
+}
+
+.dog-table-header-sortable:hover .sort-icon {
+    color: var(--color-white);
+}
+
+.sort-icon-inactive {
+    opacity: 0.4;
+    font-size: 0.75rem;
+}
+
+.dog-table-header-sortable:hover .sort-icon-inactive {
+    opacity: 0.7;
 }
 
 /* Filas de tabla */
@@ -546,6 +642,15 @@ body {
         text-align: center;
     }
 
+    .search-container {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .search-input {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.8125rem;
+    }
+
     .dog-table-container {
         border-radius: var(--radius-sm);
     }
@@ -562,6 +667,19 @@ body {
 }
 
 @media (max-width: 480px) {
+    .search-container {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .search-label {
+        font-size: 0.8125rem;
+    }
+
+    .search-input {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.8125rem;
+    }
+
     .dog-table-header,
     .dog-table-cell {
         padding: var(--spacing-sm);
