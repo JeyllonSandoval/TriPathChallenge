@@ -43,7 +43,7 @@ body {
 
 .main {
     flex: 1;
-    padding: 2.5rem 0;
+    padding: 0.5rem 0;
 }
 
 /* Panel unificado de configuración, controles y estadísticas */
@@ -51,9 +51,9 @@ body {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
     margin-bottom: 2rem;
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.5rem;
     background: rgba(30, 30, 30, 0.4);
     border-radius: var(--border-radius);
     border: 2px solid rgba(128, 74, 138, 0.3);
@@ -67,7 +67,8 @@ body {
 .difficulty-selector {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.625rem;
+    white-space: nowrap;
 }
 
 .difficulty-selector label {
@@ -103,14 +104,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 1.75rem;
     flex-wrap: wrap;
+    padding: 0 0.5rem;
 }
 
 .stat-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    min-width: fit-content;
 }
 
 .stat-icon {
@@ -121,24 +123,27 @@ body {
 .stat-content {
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
+    gap: 0.2rem;
+    text-align: center;
 }
 
 .stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: var(--text-light);
     opacity: 0.7;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    line-height: 1;
 }
 
 .stat-value {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 800;
     color: var(--orange-light);
     text-shadow: 0 2px 4px rgba(245, 158, 81, 0.4);
-    line-height: 1;
+    line-height: 1.2;
+    min-width: fit-content;
 }
 
 .header-right {
@@ -150,8 +155,8 @@ body {
     background: linear-gradient(135deg, var(--orange-light), var(--orange-medium));
     color: var(--bg-graphite);
     border: none;
-    padding: 0.875rem 2rem;
-    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+    font-size: 0.9rem;
     font-weight: 800;
     border-radius: var(--border-radius);
     cursor: pointer;
@@ -159,6 +164,7 @@ body {
     box-shadow: var(--shadow-subtle);
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .btn-new-game:hover {
@@ -173,32 +179,33 @@ body {
 /* Área de mensajes */
 .message-area {
     text-align: center;
-    min-height: 4rem;
-    margin-bottom: 2rem;
     font-size: 1.3rem;
     font-weight: 800;
     color: var(--orange-light);
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.3s ease;
     text-shadow: 0 2px 12px rgba(245, 158, 81, 0.6);
-    padding: 1.5rem;
     line-height: 1.6;
     white-space: pre-line;
     background: rgba(43, 43, 43, 0.3);
     border-radius: var(--border-radius);
     border: 2px solid rgba(245, 158, 81, 0.3);
+    /* Cuando no está visible, no ocupa espacio */
+    max-height: 0;
+    margin: 0;
+    padding: 0 1.5rem;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, opacity 0.5s ease, transform 0.3s ease, margin 0.5s ease, padding 0.5s ease;
 }
 
 .message-area.show {
+    max-height: 500px;
+    min-height: 4rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
     opacity: 1;
     transform: scale(1.02);
 }
 
-.message-area.show {
-    opacity: 1;
-}
-
-/* Grid de cartas - Se adapta a la dificultad */
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -209,14 +216,11 @@ body {
     justify-items: center;
 }
 
-/* Grid de 3 columnas (para nivel fácil - 3+3+2 cartas) */
 .cards-grid.grid-3-cols {
     grid-template-columns: repeat(3, 1fr);
     max-width: 450px;
 }
 
-/* Centrar las últimas 2 cartas en grid de 3 columnas (8 cartas: 3+3+2 centradas) 
-   Las colocamos en columnas 1 y 2, pero con justify-self para centrarlas visualmente */
 .cards-grid.grid-3-cols > .card:nth-child(7) {
     grid-column: 1;
     margin-right: auto;
@@ -227,7 +231,6 @@ body {
     margin-left: auto;
 }
 
-/* Alternativa: usar un wrapper invisible para centrar */
 .cards-grid.grid-3-cols::before {
     content: '';
     grid-column: 3;
@@ -253,7 +256,7 @@ body {
     transform: translateY(-4px) scale(1.02);
 }
 
-/* Contenido de la carta (emoji) */
+/* Contenido de la carta (seria mejor con iconos, es que no vieron Emoji Movie?) */
 .card-content {
     position: absolute;
     top: 50%;
@@ -409,9 +412,7 @@ body {
         padding: 1.5rem 0;
     }
 
-    .message-area {
-        font-size: 1.1rem;
-        font-weight: 700;
+    .message-area.show {
         min-height: 3rem;
         padding: 1rem;
     }

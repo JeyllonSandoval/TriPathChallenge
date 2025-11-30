@@ -138,9 +138,8 @@ function initGame(): void {
     // Habilita todas las cartas
     setTimeout(() => {
         enableAvailableCards();
-        // Inicia el juego y el timer
-        gameState.isGameActive = true;
-        startTimer();
+        // El juego está listo, pero el timer iniciará cuando se voltea la primera carta
+        gameState.isGameActive = false;
     }, 100);
 }
 
@@ -274,6 +273,12 @@ function handleCardClick(card: Card): void {
     // Validación: no permitir clic en la misma carta dos veces
     if (gameState.flippedCards.some(flippedCard => flippedCard.id === card.id)) {
         return;
+    }
+    
+    // Si es la primera carta volteada, inicia el timer y el juego
+    if (gameState.flippedCards.length === 0 && !gameState.isGameActive) {
+        gameState.isGameActive = true;
+        startTimer();
     }
     
     // Voltea la carta
