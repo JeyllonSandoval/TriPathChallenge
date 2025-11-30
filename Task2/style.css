@@ -1,0 +1,1049 @@
+/* Reset y Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Paleta de colores */
+    --color-navy: #2F4156;
+    --color-teal: #567C8D;
+    --color-sky-blue: #C8D9E6;
+    --color-beige: #F5EFEB;
+    --color-white: #FFFFFF;
+    
+    /* Colores semánticos */
+    --color-foreground: var(--color-navy);
+    --color-background: var(--color-beige);
+    --color-card: var(--color-white);
+    --color-card-foreground: var(--color-navy);
+    --color-muted: var(--color-teal);
+    --color-border: var(--color-sky-blue);
+    --color-primary: var(--color-teal);
+    
+    /* Sombras */
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    
+    /* Espaciado */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* Border radius */
+    --radius-sm: 0.375rem;
+    --radius-lg: 1rem;
+    
+    /* Transiciones */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tipografía */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-foreground);
+    background-color: var(--color-background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenedor principal */
+.container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+/* Header */
+.header {
+    background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-teal) 100%);
+    color: white;
+    padding: var(--spacing-md) 0;
+    box-shadow: var(--shadow-md);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header .title {
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.9) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header .subtitle {
+    font-size: clamp(0.875rem, 2vw, 1.125rem);
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 400;
+}
+
+/* Main content */
+.main {
+    flex: 1;
+    padding: var(--spacing-lg) 0;
+}
+
+/* Grid de perros */
+.dogs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--spacing-2xl);
+    padding: var(--spacing-md) 0;
+}
+
+/* Tarjeta de perro */
+.dog-card {
+    background-color: var(--color-card);
+    border-radius: var(--radius-lg);
+    border: none;
+    overflow: hidden;
+    box-shadow: none;
+    transition: all var(--transition-slow);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.dog-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(47, 65, 86, 0.12);
+}
+
+/* Contenedor de la imagen */
+.dog-image-container {
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+    background: var(--color-beige);
+    position: relative;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.dog-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+    display: block;
+}
+
+.dog-card:hover .dog-image {
+    transform: scale(1.05);
+}
+
+/* Overlay para sub-razas */
+.dog-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(47, 65, 86, 0.92);
+    backdrop-filter: blur(8px);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+    padding: var(--spacing-xl);
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.dog-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.dog-overlay-content {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+
+.dog-overlay-title {
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-sky-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.9;
+}
+
+.dog-overlay-list {
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.dog-overlay-list li {
+    padding: var(--spacing-sm) 0;
+    background: none;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+    font-size: 0.875rem;
+    font-weight: 400;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.dog-overlay-list li:last-child {
+    border-bottom: none;
+}
+
+.dog-overlay-list li:hover {
+    padding-left: var(--spacing-xs);
+    opacity: 1;
+}
+
+.dog-overlay-loading,
+.dog-overlay-empty,
+.dog-overlay-error {
+    text-align: left;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-weight: 400;
+}
+
+.dog-overlay-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.dog-overlay-loading::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: var(--color-sky-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Nombre del perro */
+.dog-name {
+    padding: var(--spacing-md) var(--spacing-lg);
+    text-align: left;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-card-foreground);
+    margin: 0;
+    border: none;
+    transition: color var(--transition-fast);
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+}
+
+.dog-card:hover .dog-name {
+    color: var(--color-teal);
+}
+
+/* Mensaje de carga */
+.loading-message {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-muted);
+    font-size: 1rem;
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.loading-message::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--color-navy);
+    color: var(--color-white);
+    padding: var(--spacing-xl) 0;
+    text-align: center;
+    margin-top: var(--spacing-2xl);
+}
+
+.footer p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Badge decorativo en header */
+.header::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-sky-blue) 0%, var(--color-white) 100%);
+    margin: var(--spacing-md) auto 0;
+    border-radius: var(--radius-sm);
+    opacity: 0.7;
+}
+
+/* Media Queries - Responsive */
+
+/* Tablets */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+
+    .header {
+        padding: var(--spacing-xl) 0;
+    }
+
+    .dogs-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: var(--spacing-xl);
+    }
+
+    .dog-image-container {
+        height: 280px;
+    }
+
+    .main {
+        padding: var(--spacing-xl) 0;
+    }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+
+    .header {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .dogs-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .dog-image-container {
+        height: 320px;
+    }
+
+    .main {
+        padding: var(--spacing-lg) 0;
+    }
+}
+
+/* Accesibilidad - Focus states */
+.dog-card:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Scrollbar personalizado */
+.dog-overlay::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dog-overlay::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dog-overlay::-webkit-scrollbar-thumb {
+    background: var(--color-sky-blue);
+    border-radius: var(--radius-sm);
+}
+
+.dog-overlay::-webkit-scrollbar-thumb:hover {
+    background: var(--color-teal);
+}
+
+/* Navegación */
+.navigation {
+    display: flex;
+    flex-direction: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.nav-button {
+    text-align: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    width: 10.5rem;
+    background-color: var(--color-white);
+    color: var(--color-navy);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all var(--transition-base);
+    border: 1px solid var(--color-sky-blue);
+    cursor: pointer;
+    display: inline-block;
+}
+
+.nav-button:hover {
+    background-color: var(--color-sky-blue);
+    color: var(--color-navy);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-button-active {
+    background-color: var(--color-teal);
+    color: var(--color-white);
+    border-color: var(--color-teal);
+}
+
+.nav-button-active:hover {
+    background-color: var(--color-navy);
+    color: var(--color-white);
+}
+
+/* Contenedor de búsqueda */
+.search-container {
+    width: 100%;
+    margin-bottom: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.search-label {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-navy);
+    text-align: left;
+}
+
+.search-input {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 0.875rem;
+    color: var(--color-navy);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-sky-blue);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.search-input::placeholder {
+    color: rgba(47, 65, 86, 0.4);
+}
+
+.search-input:focus {
+    border-color: var(--color-teal);
+    box-shadow: 0 0 0 3px rgba(86, 124, 141, 0.1);
+}
+
+.search-input:hover {
+    border-color: var(--color-teal);
+}
+
+/* Sección de tabla */
+.table-section {
+    width: 100%;
+    padding: var(--spacing-md) 0;
+}
+
+/* Contenedor de tabla */
+.dog-table-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-sky-blue);
+}
+
+/* Tabla */
+.dog-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+/* Encabezado de tabla */
+.dog-table-header {
+    padding: var(--spacing-lg);
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-navy);
+    background-color: var(--color-sky-blue);
+    border-bottom: 2px solid var(--color-teal);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.dog-table-header:first-child {
+    border-top-left-radius: var(--radius-lg);
+}
+
+.dog-table-header:last-child {
+    border-top-right-radius: var(--radius-lg);
+}
+
+/* Header ordenable */
+.dog-table-header-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--transition-fast);
+    position: relative;
+}
+
+.dog-table-header-sortable > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.dog-table-header-sortable:hover {
+    background-color: var(--color-teal);
+    color: var(--color-white);
+}
+
+.dog-table-header-sortable:focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: -2px;
+}
+
+.dog-table-header-sortable:active {
+    background-color: var(--color-navy);
+}
+
+/* Icono de ordenamiento */
+.sort-icon {
+    font-size: 0.875rem;
+    color: var(--color-navy);
+    transition: color var(--transition-fast);
+    font-weight: bold;
+    min-width: 1.2rem;
+    text-align: center;
+    display: inline-block;
+}
+
+.dog-table-header-sortable:hover .sort-icon {
+    color: var(--color-white);
+}
+
+.sort-icon-inactive {
+    opacity: 0.4;
+    font-size: 0.75rem;
+}
+
+.dog-table-header-sortable:hover .sort-icon-inactive {
+    opacity: 0.7;
+}
+
+/* Filas de tabla */
+.dog-table-row {
+    border-bottom: 1px solid var(--color-sky-blue);
+    transition: background-color var(--transition-fast);
+}
+
+.dog-table-row:hover {
+    background-color: var(--color-beige);
+}
+
+.dog-table-row:last-child {
+    border-bottom: none;
+}
+
+/* Celdas de tabla */
+.dog-table-cell {
+    padding: var(--spacing-lg);
+    color: var(--color-navy);
+    vertical-align: top;
+}
+
+.dog-table-breed {
+    font-weight: 500;
+    color: var(--color-navy);
+    min-width: 200px;
+}
+
+.dog-table-subbreeds {
+    color: var(--color-teal);
+}
+
+.dog-table-empty {
+    color: rgba(47, 65, 86, 0.4);
+    font-style: italic;
+}
+
+/* Lista de sub-razas */
+.dog-table-subbreeds-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.dog-table-subbreed-item {
+    padding: var(--spacing-xs) 0;
+    font-size: 0.8125rem;
+    color: var(--color-teal);
+}
+
+.dog-table-subbreed-item::before {
+    content: '•';
+    margin-right: var(--spacing-sm);
+    color: var(--color-sky-blue);
+}
+
+/* Responsive para tabla */
+@media (max-width: 768px) {
+    .navigation {
+        align-items: stretch;
+    }
+
+    .nav-button {
+        text-align: center;
+    }
+
+    .search-container {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .search-input {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.8125rem;
+    }
+
+    .dog-table-container {
+        border-radius: var(--radius-sm);
+    }
+
+    .dog-table-header,
+    .dog-table-cell {
+        padding: var(--spacing-md);
+        font-size: 0.8125rem;
+    }
+
+    .dog-table-breed {
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-container {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .search-label {
+        font-size: 1rem;
+    }
+
+    .search-input {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.8125rem;
+    }
+
+    .dog-table-header,
+    .dog-table-cell {
+        padding: var(--spacing-sm);
+        font-size: 0.75rem;
+    }
+
+    .dog-table-breed {
+        min-width: 120px;
+    }
+
+    .dog-table-subbreed-item {
+        font-size: 0.75rem;
+    }
+}
+
+/* ============================================
+   CRUD Styles
+   ============================================ */
+
+/* Form Section */
+.crud-form-section {
+    background: var(--color-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+    margin-bottom: var(--spacing-lg);
+}
+
+.crud-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+}
+
+.form-input,
+.form-textarea {
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--color-foreground);
+    background: var(--color-white);
+    transition: border-color var(--transition-base);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(86, 124, 141, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+}
+
+.form-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    user-select: none;
+}
+
+.form-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+/* Buttons */
+.btn {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.btn-primary:hover {
+    background: #4a6b7a;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: var(--color-border);
+    color: var(--color-foreground);
+}
+
+.btn-secondary:hover {
+    background: #b8c9d6;
+}
+
+.btn-small {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.8125rem;
+}
+
+.btn-edit {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.btn-edit:hover {
+    background: #4a6b7a;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-delete {
+    background: var(--color-navy);
+    color: var(--color-white);
+}
+
+.btn-delete:hover {
+    background: #1f2d3a;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Search Section */
+.crud-search-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+}
+
+
+/* List Section */
+.crud-list-section {
+    margin-top: var(--spacing-xl);
+}
+
+.breeds-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.breed-card {
+    background: var(--color-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.breed-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+}
+
+.breed-no-subbreeds {
+    color: rgba(47, 65, 86, 0.4);
+    font-style: italic;
+}
+
+.breed-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+    gap: var(--spacing-md);
+    order: 1;
+}
+
+.breed-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+    margin: 0;
+    flex: 1;
+}
+
+.breed-card-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+}
+
+.breed-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    order: 2;
+}
+
+.breed-card-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.breed-card-section strong {
+    color: var(--color-primary);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.breed-subbreeds-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--spacing-xs) 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.breed-subbreeds-list li {
+    background: var(--color-border);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    color: var(--color-foreground);
+}
+
+
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-muted);
+    background: var(--color-card);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--color-border);
+}
+
+/* Messages */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.message {
+    animation: slideIn 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .crud-form-section {
+        padding: var(--spacing-lg);
+    }
+
+    .crud-search-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .breeds-list {
+        grid-template-columns: 1fr;
+    }
+
+    .breed-card-header {
+        display: contents;
+    }
+
+    .breed-card-title {
+        order: 1;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .breed-card-body {
+        order: 2;
+    }
+
+    .breed-card-actions {
+        order: 3;
+        margin-top: var(--spacing-md);
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .breed-card-actions .btn {
+        flex: 1;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .navigation {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-xs);
+    }
+
+    .nav-button:nth-child(3) {
+        grid-column: 1 / -1;
+        justify-self: center;
+        max-width: 300px;
+    }
+}
