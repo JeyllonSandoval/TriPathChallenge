@@ -1,15 +1,23 @@
 "use strict";
+const DIFFICULTY_CONFIGS = {
+    easy: { pairs: 4, name: 'Fácil', gridCols: 3 }, // 3x3 con última fila 2 cartas (8 cartas totales)
+    medium: { pairs: 8, name: 'Medio', gridCols: 4 }, // 4x4 (16 cartas)
+    hard: { pairs: 12, name: 'Difícil', gridCols: 6 } // 6x4 (24 cartas)
+};
 // Emojis para las cartas (fáciles de ver)
-const CARD_EMOJIS = ['🎮', '🎯', '🎨', '🎭', '🎪', '🎬', '🎤', '🎧', '🎸', '🎺', '🎻', '🥁'];
+const CARD_EMOJIS = ['🎮', '🎯', '🍉', '🏎️', '🎪', '🎬', '🎤', '🎧', '🎸', '🎺', '🎻', '🥁', '🎲', '🎰', '🎳', '🏁'];
 // Estado global del juego
 let gameState = {
     cards: [],
     flippedCards: [],
     isLocked: false,
-    moves: 0
+    moves: 0,
+    time: 0,
+    score: 0,
+    difficulty: 'medium',
+    timerInterval: null,
+    isGameActive: false
 };
-// Número de pares a generar (8 pares = 16 cartas para grid 4x4)
-const PAIRS_COUNT = 8;
 /**
  * Genera pares de cartas con emojis aleatorios
  */
@@ -37,26 +45,48 @@ function shuffleCards(array) {
     return shuffled;
 }
 /**
+ * Obtiene la configuración de dificultad actual
+ */
+function getCurrentDifficulty() {
+    return DIFFICULTY_CONFIGS[gameState.difficulty];
+}
+/**
  * Inicializa el juego con nuevas cartas barajadas
  */
 function initGame() {
+    // Detiene el timer si está corriendo
+    stopTimer();
     // Asegura que el juego esté desbloqueado
     gameState.isLocked = false;
     // Limpia cualquier cartas volteadas
     gameState.flippedCards = [];
-    // Reinicia el contador de movimientos
+    // Reinicia contadores
     gameState.moves = 0;
+    gameState.time = 0;
+    gameState.score = 0;
+    gameState.isGameActive = false;
+    // Actualiza estadísticas en el DOM
+    updateStatsDisplay();
     // Limpia mensajes
     clearMessage();
-    // Genera pares de cartas
-    const cardPairs = generateCardPairs(PAIRS_COUNT);
+    // Obtiene la configuración de dificultad
+    const config = getCurrentDifficulty();
+    // Genera pares de cartas según la dificultad
+    const cardPairs = generateCardPairs(config.pairs);
+    console.log(`Generados ${cardPairs.length} cartas para dificultad ${config.name}`);
     // Baraja las cartas
     gameState.cards = shuffleCards(cardPairs);
+    console.log(`Cartas barajadas:`, gameState.cards.length);
+    // Actualiza el grid según la dificultad
+    updateGridLayout(config.gridCols);
     // Renderiza las cartas en el DOM
     renderCards();
     // Habilita todas las cartas
     setTimeout(() => {
         enableAvailableCards();
+        // Inicia el juego y el timer
+        gameState.isGameActive = true;
+        startTimer();
     }, 100);
 }
 /**
@@ -71,8 +101,14 @@ function createCardElement(card) {
     cardContent.className = 'card-content';
     cardContent.textContent = card.value;
     cardElement.appendChild(cardContent);
-    // Event listener para el clic
-    cardElement.addEventListener('click', () => handleCardClick(card));
+    // Event listener para el clic - usa el dataset para encontrar la carta
+    cardElement.addEventListener('click', () => {
+        const cardId = parseInt(cardElement.dataset.cardId || '0', 10);
+        const clickedCard = gameState.cards.find(c => c.id === cardId);
+        if (clickedCard) {
+            handleCardClick(clickedCard);
+        }
+    });
     return cardElement;
 }
 /**
@@ -84,6 +120,11 @@ function renderCards() {
         console.error('No se encontró el contenedor de cartas');
         return;
     }
+    // Verifica que haya cartas para renderizar
+    if (!gameState.cards || gameState.cards.length === 0) {
+        console.error('No hay cartas para renderizar');
+        return;
+    }
     // Limpia el grid
     cardsGrid.innerHTML = '';
     // Crea y agrega cada carta
@@ -93,6 +134,7 @@ function renderCards() {
         updateCardVisualState(cardElement, card);
         cardsGrid.appendChild(cardElement);
     });
+    console.log(`Renderizadas ${gameState.cards.length} cartas`);
 }
 /**
  * Actualiza el estado visual de una carta en el DOM
@@ -172,6 +214,8 @@ function handleCardClick(card) {
     // Si hay 2 cartas volteadas, verifica si coinciden después de un breve delay
     if (gameState.flippedCards.length === 2) {
         gameState.moves++;
+        updateMovesDisplay();
+        updateScore();
         // Pequeño delay para permitir que la segunda carta se vea antes de comparar
         setTimeout(() => {
             checkCardMatch();
@@ -283,7 +327,149 @@ function enableAvailableCards() {
 function checkGameWin() {
     const allMatched = gameState.cards.every(card => card.isMatched);
     if (allMatched) {
-        showMessage(`¡Ganaste! Completaste el juego en ${gameState.moves} movimientos. 🎉`);
+        // Detiene el timer
+        stopTimer();
+        gameState.isGameActive = false;
+        // Calcula la puntuación final
+        calculateFinalScore();
+        // Muestra mensaje de victoria
+        const config = getCurrentDifficulty();
+        const minutes = Math.floor(gameState.time / 60);
+        const seconds = gameState.time % 60;
+        const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        showMessage(`¡FELICIDADES!\n` +
+            `Completaste el nivel ${config.name}\n` +
+            `${timeStr} | ${gameState.moves} movimientos | ${gameState.score.toLocaleString()} puntos`);
+    }
+}
+/**
+ * Inicia el timer del juego
+ */
+function startTimer() {
+    // Limpia cualquier timer existente
+    if (gameState.timerInterval !== null) {
+        clearInterval(gameState.timerInterval);
+    }
+    // Reinicia el tiempo
+    gameState.time = 0;
+    updateTimerDisplay();
+    // Inicia el intervalo cada segundo
+    gameState.timerInterval = window.setInterval(() => {
+        if (gameState.isGameActive) {
+            gameState.time++;
+            updateTimerDisplay();
+            updateScore(); // Actualiza la puntuación mientras juega
+        }
+    }, 1000);
+}
+/**
+ * Detiene el timer del juego
+ */
+function stopTimer() {
+    if (gameState.timerInterval !== null) {
+        clearInterval(gameState.timerInterval);
+        gameState.timerInterval = null;
+    }
+}
+/**
+ * Actualiza el display del timer
+ */
+function updateTimerDisplay() {
+    const timerDisplay = document.getElementById('timerDisplay');
+    if (timerDisplay) {
+        const minutes = Math.floor(gameState.time / 60);
+        const seconds = gameState.time % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+}
+/**
+ * Actualiza el display de movimientos
+ */
+function updateMovesDisplay() {
+    const movesDisplay = document.getElementById('movesDisplay');
+    if (movesDisplay) {
+        movesDisplay.textContent = gameState.moves.toString();
+    }
+}
+/**
+ * Actualiza el display de puntuación
+ */
+function updateScoreDisplay() {
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    if (scoreDisplay) {
+        scoreDisplay.textContent = gameState.score.toLocaleString();
+    }
+}
+/**
+ * Actualiza todas las estadísticas en el display
+ */
+function updateStatsDisplay() {
+    updateTimerDisplay();
+    updateMovesDisplay();
+    updateScoreDisplay();
+}
+/**
+ * Calcula la puntuación mientras se juega
+ */
+function updateScore() {
+    if (!gameState.isGameActive || gameState.moves === 0) {
+        gameState.score = 0;
+        return;
+    }
+    const config = getCurrentDifficulty();
+    const baseScore = config.pairs * 100; // Puntuación base según dificultad
+    const timePenalty = gameState.time * 2; // Penalización por tiempo
+    const movesPenalty = gameState.moves * 5; // Penalización por movimientos
+    // Puntuación = base - penalizaciones (mínimo 0)
+    gameState.score = Math.max(0, baseScore - timePenalty - movesPenalty);
+    updateScoreDisplay();
+}
+/**
+ * Calcula la puntuación final cuando ganas
+ */
+function calculateFinalScore() {
+    const config = getCurrentDifficulty();
+    const baseScore = config.pairs * 100;
+    const timePenalty = gameState.time * 2;
+    const movesPenalty = gameState.moves * 5;
+    // Bonus por completar rápido
+    const timeBonus = Math.max(0, 300 - gameState.time) * 3;
+    // Bonus por pocos movimientos
+    const efficiencyBonus = Math.max(0, (config.pairs * 2 - gameState.moves) * 10);
+    gameState.score = Math.max(0, baseScore - timePenalty - movesPenalty + timeBonus + efficiencyBonus);
+    updateScoreDisplay();
+}
+/**
+ * Actualiza el layout del grid según la dificultad
+ */
+function updateGridLayout(cols) {
+    const cardsGrid = document.getElementById('cardsGrid');
+    if (cardsGrid) {
+        cardsGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        // Ajusta el max-width según el número de columnas
+        if (cols === 3) {
+            cardsGrid.style.maxWidth = '450px';
+            cardsGrid.classList.add('grid-3-cols');
+        }
+        else if (cols <= 4) {
+            cardsGrid.style.maxWidth = '600px';
+            cardsGrid.classList.remove('grid-3-cols');
+        }
+        else if (cols === 6) {
+            // En móviles, ajustar a 4 columnas si la pantalla es pequeña
+            if (window.innerWidth <= 480) {
+                cardsGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                cardsGrid.style.maxWidth = '100%';
+            }
+            else {
+                cardsGrid.style.maxWidth = '900px';
+            }
+            cardsGrid.classList.remove('grid-3-cols');
+        }
+        else {
+            cardsGrid.style.maxWidth = '900px';
+            cardsGrid.classList.remove('grid-3-cols');
+        }
     }
 }
 /**
@@ -309,9 +495,20 @@ function clearMessage() {
 // Inicialización del juego
 function init() {
     const newGameBtn = document.getElementById('newGameBtn');
+    const difficultySelect = document.getElementById('difficultySelect');
+    // Configura el botón de nuevo juego
     if (newGameBtn) {
         newGameBtn.addEventListener('click', () => {
             initGame();
+        });
+    }
+    // Configura el selector de dificultad
+    if (difficultySelect) {
+        difficultySelect.value = gameState.difficulty;
+        difficultySelect.addEventListener('change', (e) => {
+            const newDifficulty = e.target.value;
+            gameState.difficulty = newDifficulty;
+            initGame(); // Reinicia el juego con la nueva dificultad
         });
     }
     // Inicia el juego automáticamente
