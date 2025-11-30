@@ -27,11 +27,6 @@ export class DogTable {
             .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
             .join(' ');
     }
-    /**
-     * Crea el icono de ordenamiento
-     * @param order - Orden actual (asc, desc, o null)
-     * @returns Elemento HTML del icono
-     */
     crearIconoOrdenamiento(order) {
         const icono = document.createElement('span');
         icono.className = 'sort-icon';
@@ -50,11 +45,6 @@ export class DogTable {
         }
         return icono;
     }
-    /**
-     * Crea el icono de ordenamiento para sub-razas
-     * @param order - Orden actual
-     * @returns Elemento HTML del icono
-     */
     crearIconoOrdenamientoSubRazas(order) {
         const icono = document.createElement('span');
         icono.className = 'sort-icon';
@@ -73,10 +63,6 @@ export class DogTable {
         }
         return icono;
     }
-    /**
-     * Crea el elemento HTML de la tabla
-     * @returns Elemento HTMLElement de la tabla
-     */
     crearElemento() {
         const contenedor = document.createElement('div');
         contenedor.className = 'dog-table-container';
