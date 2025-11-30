@@ -68,22 +68,31 @@ function shuffleCards<T>(array: T[]): T[] {
  * Inicializa el juego con nuevas cartas barajadas
  */
 function initGame(): void {
+    // Asegura que el juego esté desbloqueado
+    gameState.isLocked = false;
+    
+    // Limpia cualquier cartas volteadas
+    gameState.flippedCards = [];
+    
+    // Reinicia el contador de movimientos
+    gameState.moves = 0;
+    
+    // Limpia mensajes
+    clearMessage();
+    
     // Genera pares de cartas
     const cardPairs = generateCardPairs(PAIRS_COUNT);
     
     // Baraja las cartas
     gameState.cards = shuffleCards(cardPairs);
     
-    // Reinicia el estado del juego
-    gameState.flippedCards = [];
-    gameState.isLocked = false;
-    gameState.moves = 0;
-    
-    // Limpia mensajes
-    clearMessage();
-    
     // Renderiza las cartas en el DOM
     renderCards();
+    
+    // Habilita todas las cartas
+    setTimeout(() => {
+        enableAvailableCards();
+    }, 100);
 }
 
 /**
@@ -142,23 +151,35 @@ function updateCardVisualState(cardElement: HTMLElement, card: Card): void {
     cardElement.classList.remove('card-back', 'card-front', 'card-matched');
     
     if (card.isMatched) {
-        // Carta emparejada
+        // Carta emparejada - muestra el contenido y aplica estilo especial
         cardElement.classList.add('card', 'card-matched', 'card-front');
-        if (cardContent) cardContent.style.opacity = '1';
+        if (cardContent) {
+            cardContent.style.opacity = '1';
+        }
+        cardElement.style.pointerEvents = 'none';
     } else if (card.isFlipped) {
-        // Carta boca arriba
+        // Carta boca arriba - muestra el contenido
         cardElement.classList.add('card', 'card-front');
-        if (cardContent) cardContent.style.opacity = '1';
+        if (cardContent) {
+            cardContent.style.opacity = '1';
+        }
     } else {
-        // Carta boca abajo
+        // Carta boca abajo - oculta el contenido
         cardElement.classList.add('card', 'card-back');
-        if (cardContent) cardContent.style.opacity = '0';
+        if (cardContent) {
+            cardContent.style.opacity = '0';
+        }
     }
     
-    // Deshabilita clics si está emparejada o el juego está bloqueado
-    if (card.isMatched || gameState.isLocked) {
+    // Maneja la interactividad según el estado del juego
+    if (card.isMatched) {
+        // Las cartas emparejadas nunca son interactivas
+        cardElement.style.pointerEvents = 'none';
+    } else if (gameState.isLocked) {
+        // Durante la comparación, todas las cartas están bloqueadas
         cardElement.style.pointerEvents = 'none';
     } else {
+        // Solo las cartas no emparejadas y no bloqueadas son interactivas
         cardElement.style.pointerEvents = 'auto';
     }
 }
@@ -167,13 +188,28 @@ function updateCardVisualState(cardElement: HTMLElement, card: Card): void {
  * Maneja el clic en una carta
  */
 function handleCardClick(card: Card): void {
-    // No hacer nada si la carta ya está volteada, emparejada, o el juego está bloqueado
-    if (card.isFlipped || card.isMatched || gameState.isLocked) {
+    // Validación: no hacer nada si el juego está bloqueado
+    if (gameState.isLocked) {
         return;
     }
     
-    // No hacer nada si ya hay 2 cartas volteadas
+    // Validación: no hacer nada si la carta ya está volteada
+    if (card.isFlipped) {
+        return;
+    }
+    
+    // Validación: no hacer nada si la carta ya está emparejada
+    if (card.isMatched) {
+        return;
+    }
+    
+    // Validación: no hacer nada si ya hay 2 cartas volteadas
     if (gameState.flippedCards.length >= 2) {
+        return;
+    }
+    
+    // Validación: no permitir clic en la misma carta dos veces
+    if (gameState.flippedCards.some(flippedCard => flippedCard.id === card.id)) {
         return;
     }
     
@@ -181,16 +217,19 @@ function handleCardClick(card: Card): void {
     card.isFlipped = true;
     gameState.flippedCards.push(card);
     
-    // Actualiza el DOM
+    // Actualiza el DOM inmediatamente
     const cardElement = document.querySelector(`[data-card-id="${card.id}"]`) as HTMLElement;
     if (cardElement) {
         updateCardVisualState(cardElement, card);
     }
     
-    // Si hay 2 cartas volteadas, verifica si coinciden
+    // Si hay 2 cartas volteadas, verifica si coinciden después de un breve delay
     if (gameState.flippedCards.length === 2) {
         gameState.moves++;
-        checkCardMatch();
+        // Pequeño delay para permitir que la segunda carta se vea antes de comparar
+        setTimeout(() => {
+            checkCardMatch();
+        }, 300);
     }
 }
 
@@ -200,49 +239,112 @@ function handleCardClick(card: Card): void {
 function checkCardMatch(): void {
     const [card1, card2] = gameState.flippedCards;
     
-    // Bloquea interacciones mientras se verifica
-    gameState.isLocked = true;
+    if (!card1 || !card2) {
+        return;
+    }
     
-    // Espera un momento para que el usuario vea las cartas
+    // Bloquea todas las interacciones mientras se verifica
+    gameState.isLocked = true;
+    disableAllCards();
+    
+    // Espera para que el usuario vea las cartas antes de comparar
     setTimeout(() => {
         if (card1.value === card2.value) {
-            // ¡Coinciden!
-            card1.isMatched = true;
-            card2.isMatched = true;
-            
-            // Actualiza el DOM
-            const cardElement1 = document.querySelector(`[data-card-id="${card1.id}"]`) as HTMLElement;
-            const cardElement2 = document.querySelector(`[data-card-id="${card2.id}"]`) as HTMLElement;
-            
-            if (cardElement1) updateCardVisualState(cardElement1, card1);
-            if (cardElement2) updateCardVisualState(cardElement2, card2);
-            
-            // Verifica si el juego terminó
-            checkGameWin();
+            // ¡Las cartas coinciden!
+            handleMatch(card1, card2);
         } else {
-            // No coinciden, voltea las cartas de nuevo
-            card1.isFlipped = false;
-            card2.isFlipped = false;
-            
-            // Actualiza el DOM
-            const cardElement1 = document.querySelector(`[data-card-id="${card1.id}"]`) as HTMLElement;
-            const cardElement2 = document.querySelector(`[data-card-id="${card2.id}"]`) as HTMLElement;
-            
-            if (cardElement1) updateCardVisualState(cardElement1, card1);
-            if (cardElement2) updateCardVisualState(cardElement2, card2);
+            // Las cartas no coinciden, voltearlas de nuevo
+            handleMismatch(card1, card2);
         }
         
-        // Limpia las cartas volteadas y desbloquea
+        // Limpia las cartas volteadas
         gameState.flippedCards = [];
-        gameState.isLocked = false;
         
-        // Habilita interacciones de nuevo
-        document.querySelectorAll('.card').forEach(cardEl => {
-            if (!cardEl.classList.contains('card-matched')) {
-                (cardEl as HTMLElement).style.pointerEvents = 'auto';
-            }
-        });
-    }, 1000); // Espera 1 segundo
+        // Desbloquea el juego después de un breve momento
+        setTimeout(() => {
+            gameState.isLocked = false;
+            enableAvailableCards();
+        }, 300);
+    }, 1000); // Espera 1 segundo para ver las cartas
+}
+
+/**
+ * Maneja cuando las cartas coinciden
+ */
+function handleMatch(card1: Card, card2: Card): void {
+    // Marca las cartas como emparejadas
+    card1.isMatched = true;
+    card2.isMatched = true;
+    
+    // Actualiza el DOM con animación
+    const cardElement1 = document.querySelector(`[data-card-id="${card1.id}"]`) as HTMLElement;
+    const cardElement2 = document.querySelector(`[data-card-id="${card2.id}"]`) as HTMLElement;
+    
+    if (cardElement1) {
+        updateCardVisualState(cardElement1, card1);
+        cardElement1.classList.add('card-match-success');
+    }
+    
+    if (cardElement2) {
+        updateCardVisualState(cardElement2, card2);
+        cardElement2.classList.add('card-match-success');
+    }
+    
+    // Remueve la clase de éxito después de la animación
+    setTimeout(() => {
+        if (cardElement1) cardElement1.classList.remove('card-match-success');
+        if (cardElement2) cardElement2.classList.remove('card-match-success');
+    }, 500);
+    
+    // Verifica si el juego terminó
+    checkGameWin();
+}
+
+/**
+ * Maneja cuando las cartas no coinciden
+ */
+function handleMismatch(card1: Card, card2: Card): void {
+    // Vuelve a voltear las cartas
+    card1.isFlipped = false;
+    card2.isFlipped = false;
+    
+    // Actualiza el DOM
+    const cardElement1 = document.querySelector(`[data-card-id="${card1.id}"]`) as HTMLElement;
+    const cardElement2 = document.querySelector(`[data-card-id="${card2.id}"]`) as HTMLElement;
+    
+    if (cardElement1) {
+        updateCardVisualState(cardElement1, card1);
+        // Agrega animación de "shake" visual
+        cardElement1.classList.add('card-mismatch');
+        setTimeout(() => cardElement1.classList.remove('card-mismatch'), 500);
+    }
+    
+    if (cardElement2) {
+        updateCardVisualState(cardElement2, card2);
+        // Agrega animación de "shake" visual
+        cardElement2.classList.add('card-mismatch');
+        setTimeout(() => cardElement2.classList.remove('card-mismatch'), 500);
+    }
+}
+
+/**
+ * Deshabilita todas las cartas temporalmente
+ */
+function disableAllCards(): void {
+    document.querySelectorAll('.card').forEach(cardEl => {
+        (cardEl as HTMLElement).style.pointerEvents = 'none';
+    });
+}
+
+/**
+ * Habilita solo las cartas disponibles (no emparejadas)
+ */
+function enableAvailableCards(): void {
+    document.querySelectorAll('.card').forEach(cardEl => {
+        if (!cardEl.classList.contains('card-matched')) {
+            (cardEl as HTMLElement).style.pointerEvents = 'auto';
+        }
+    });
 }
 
 /**

@@ -201,6 +201,40 @@ body {
     opacity: 1;
 }
 
+/* Animación cuando las cartas coinciden */
+.card-match-success {
+    animation: matchSuccess 0.5s ease;
+}
+
+@keyframes matchSuccess {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Animación cuando las cartas no coinciden */
+.card-mismatch {
+    animation: mismatchShake 0.5s ease;
+}
+
+@keyframes mismatchShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-8px);
+    }
+    75% {
+        transform: translateX(8px);
+    }
+}
+
 
 /* Footer - Estilo de juego */
 .footer {
