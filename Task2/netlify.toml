@@ -1,0 +1,19 @@
+[build]
+  # Comando para construir el proyecto
+  # Instala dependencias y compila TypeScript a JavaScript
+  command = "npm install && npm run build"
+  # Directorio donde se publicarán los archivos
+  publish = "."
+
+[build.environment]
+  # Versión de Node.js (ajusta según necesites)
+  NODE_VERSION = "18"
+
+# Redirecciones para rutas limpias (opcional)
+# Si alguien accede a una ruta sin extensión, redirige al index
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+
