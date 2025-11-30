@@ -115,6 +115,92 @@ body {
     opacity: 1;
 }
 
+/* Grid de cartas - Siempre 4x4 */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Estilos para las cartas */
+.card {
+    aspect-ratio: 1;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+    user-select: none;
+}
+
+.card:hover:not(.card-matched) {
+    transform: translateY(-4px) scale(1.02);
+}
+
+/* Contenido de la carta (emoji) */
+.card-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* Estados de las cartas - Cara boca abajo */
+.card-back {
+    background: linear-gradient(135deg, var(--purple-light), var(--bg-graphite-dark));
+    border: 2px solid rgba(128, 74, 138, 0.3);
+    box-shadow: var(--shadow-subtle);
+}
+
+.card-back:hover {
+    box-shadow: var(--shadow-elevated);
+    border-color: var(--purple-light);
+}
+
+/* Cara de la carta - Contenido visible */
+.card-front {
+    background: linear-gradient(135deg, var(--orange-light), var(--orange-medium));
+    border: 2px solid rgba(245, 158, 81, 0.5);
+    box-shadow: var(--shadow-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-front .card-content {
+    color: var(--bg-graphite);
+    opacity: 1 !important;
+}
+
+/* Carta emparejada */
+.card-matched {
+    opacity: 0.7;
+    cursor: default;
+    transform: scale(0.98);
+}
+
+.card-matched:hover {
+    transform: scale(0.98);
+}
+
+.card-matched .card-content {
+    opacity: 1;
+}
+
 
 /* Footer - Estilo de juego */
 .footer {
@@ -153,6 +239,18 @@ body {
     .message-area {
         font-size: 1.1rem;
         font-weight: 700;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        padding: 0.5rem;
+        max-width: 100%;
+    }
+
+    .card-front {
+        font-size: 2rem;
+        font-weight: 800;
     }
 }
 
