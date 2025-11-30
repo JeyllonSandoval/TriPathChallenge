@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Juego de memoria - Encuentra todas las parejas">
+    <title>Memory Game - Juego de Memoria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;800;900&family=Inter:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="main">
+        <div class="container">
+            <!-- Panel unificado de configuración, controles y estadísticas -->
+            <div class="game-header">
+                <div class="header-left">
+                    <div class="difficulty-selector">
+                        <label for="difficultySelect">Dificultad:</label>
+                        <select id="difficultySelect" class="difficulty-select">
+                            <option value="easy">Fácil (4 pares)</option>
+                            <option value="medium" selected>Medio (8 pares)</option>
+                            <option value="hard">Difícil (12 pares)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <div class="stat-content">
+                            <span class="stat-label">Tiempo</span>
+                            <span id="timerDisplay" class="stat-value">00:00</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-content">
+                            <span class="stat-label">Movimientos</span>
+                            <span id="movesDisplay" class="stat-value">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-content">
+                            <span class="stat-label">Puntuación</span>
+                            <span id="scoreDisplay" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <button id="newGameBtn" class="btn-new-game">New Game</button>
+                </div>
+            </div>
+
+            <!-- Área de mensajes -->
+            <div id="messageArea" class="message-area" role="status" aria-live="polite"></div>
+
+            <!-- Grid de cartas -->
+            <div id="cardsGrid" class="cards-grid" role="grid" aria-label="Grid de cartas del juego de memoria">
+                <!-- Las cartas se crearán dinámicamente -->
+            </div>
+        </div>
+    </main>
+    <script type="module" src="dist/main.js"></script>
+</body>
+</html>
+
