@@ -132,15 +132,37 @@ function initGame(): void {
     // Actualiza el grid según la dificultad
     updateGridLayout(config.gridCols);
     
-    // Renderiza las cartas en el DOM
+    // Renderiza las cartas en el DOM (todas volteadas inicialmente)
+    // Primero, marca todas las cartas como volteadas para mostrarlas
+    gameState.cards.forEach(card => {
+        card.isFlipped = true;
+    });
+    
     renderCards();
     
-    // Habilita todas las cartas
+    // Bloquea todas las cartas durante la visualización inicial
+    disableAllCards();
+    
+    // Después de 1 segundo, oculta todas las cartas y habilita el juego
     setTimeout(() => {
+        // Oculta todas las cartas
+        gameState.cards.forEach(card => {
+            card.isFlipped = false;
+        });
+        
+        // Actualiza el estado visual de todas las cartas
+        gameState.cards.forEach(card => {
+            const cardElement = document.querySelector(`[data-card-id="${card.id}"]`) as HTMLElement;
+            if (cardElement) {
+                updateCardVisualState(cardElement, card);
+            }
+        });
+        
+        // Habilita todas las cartas
         enableAvailableCards();
         // El juego está listo, pero el timer iniciará cuando se voltea la primera carta
         gameState.isGameActive = false;
-    }, 100);
+    }, 1000);
 }
 
 /**
