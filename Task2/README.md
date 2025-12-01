@@ -1,90 +1,68 @@
 # Task 2 - Glimpse of Wonders
 
-Aplicación web para mostrar razas de perros usando la API de Dog CEO.
+Una aplicación web simple que muestra diferentes razas de perros usando la API de Dog CEO.
 
-## Instalación
+## Cómo ejecutar el proyecto
 
-No se requieren dependencias adicionales. El proyecto usa TypeScript que ya está instalado en el proyecto raíz.
+### Paso 1: Instalar dependencias
 
-## Compilación
+Primero, asegúrate de tener las dependencias instaladas. Desde la carpeta `Task2`, ejecuta:
 
-Para compilar los archivos TypeScript a JavaScript:
+```bash
+npm install
+```
+
+### Paso 2: Compilar el código TypeScript
+
+El código está escrito en TypeScript, así que necesitas compilarlo a JavaScript antes de ejecutarlo:
 
 ```bash
 npm run build
 ```
 
-O directamente:
+Esto generará los archivos JavaScript en la carpeta `dist/`.
+
+### Paso 3: Iniciar un servidor local
+
+**Importante:** No puedes abrir el archivo HTML directamente en el navegador. Necesitas un servidor local porque el proyecto usa módulos ES6.
+
+Tienes varias opciones:
+
+**Opción más fácil (con Python):**
 ```bash
-npx tsc
+python -m http.server 8080
 ```
 
-Los archivos compilados se generarán en la carpeta `dist/`.
-
-## Ejecución
-
-**IMPORTANTE:** Los módulos ES6 requieren un servidor HTTP. No funciona abriendo el HTML directamente con `file://`.
-
-### Opción 1: Usar http-server (Recomendado)
-
-```bash
-npm run dev
-```
-
-O instalar y ejecutar manualmente:
-
+**O si prefieres usar Node.js:**
 ```bash
 npx http-server . -p 8080 -o
 ```
 
-### Opción 2: Usar Python
+### Paso 4: Abrir en el navegador
 
-Si tienes Python instalado:
+Una vez que el servidor esté corriendo, abre tu navegador y ve a:
+
+```
+http://localhost:8080
+```
+
+Deberías ver la página principal con una galería de razas de perros.
+
+## Cómo probar
+
+1. **Página principal (index.html):** Muestra una galería con 20 razas de perros aleatorias, en caso de querer modificar esto, file Main.ts linia 36
+2. **Página de búsqueda (search.html):** Permite buscar y filtrar razas en una tabla
+3. **Página CRUD (crud.html):** Permite gestionar (crear, leer, actualizar, eliminar) razas de perros
+
+Navega entre las páginas usando los botones de navegación en la parte superior.
+
+## Si haces cambios en el código
+
+Si modificas algún archivo `.ts`, recuerda volver a compilar:
 
 ```bash
-# Python 3
-python -m http.server 8080
-
-# Python 2
-python -m SimpleHTTPServer 8080
+npm run build
 ```
 
-### Opción 3: Usar Node.js (simple-server)
-
-```bash
-npx simple-server
-```
-
-Luego abre tu navegador en `http://localhost:8080` (o el puerto que se muestre).
-
-## Estructura del Proyecto
-
-```
-Task2/
-├── API/
-│   └── config.ts          # Configuración de la API
-├── components/
-│   └── DogCard.ts         # Componente de tarjeta de perro
-├── dist/                  # Archivos JavaScript compilados
-│   ├── API/
-│   ├── components/
-│   └── main.js
-├── index.html             # Página principal
-├── main.ts                # Lógica principal
-├── style.css              # Estilos CSS
-└── tsconfig.json          # Configuración de TypeScript
-```
-
-## Funcionalidades
-
-- ✅ Lista todas las razas de perros desde la API
-- ✅ Muestra imagen y nombre de cada raza
-- ✅ Grid responsive
-- ✅ Componente reutilizable DogCard
-
-## Notas
-
-- Los archivos TypeScript se compilan a la carpeta `dist/`
-- El HTML está configurado para usar `dist/main.js`
-- Después de modificar archivos `.ts`, ejecuta `npm run build` para recompilar
+Y luego recarga la página en el navegador para ver los cambios, aunque la carga deberia de hacerse automatica, pero por si acaso.
 
