@@ -25,7 +25,7 @@ async function cargarRazasDePerros() {
     mensajeCarga.className = 'loading-message';
     mensajeCarga.textContent = 'Cargando razas de perros...';
     gridContainer.appendChild(mensajeCarga);
-    // Obtener solo 20 razas aleatorias (no todas)
+    // Obtener solo 20 razas aleatorias (no todas, para no sobrecargar la pagina)
     const cantidadRazas = 20;
     const razasAleatorias = await obtenerRazasAleatorias(cantidadRazas);
     if (razasAleatorias.length === 0) {
