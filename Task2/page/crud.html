@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gestiona tus razas de perros favoritas con CRUD">
+    <title>Glimpse of Wonders - Gestión de Razas</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="title">Glimpse of Wonders</h1>
+            <p class="subtitle">Gestión de Razas de Perros (CRUD)</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <nav class="navigation">
+                <a href="../index.html" class="nav-button">Ver Galería</a>
+                <a href="search.html" class="nav-button">Ver Tabla</a>
+                <a href="crud.html" class="nav-button nav-button-active">Gestión CRUD</a>
+            </nav>
+
+            <!-- Formulario para crear/editar -->
+            <section class="crud-form-section" id="crudFormSection">
+                <h2 class="section-title" id="formTitle">Agregar Nueva Raza</h2>
+                <form id="breedForm" class="crud-form">
+                    <input type="hidden" id="breedId" />
+                    
+                    <div class="form-group">
+                        <label for="breedName" class="form-label">Nombre de la Raza *</label>
+                        <input 
+                            type="text" 
+                            id="breedName" 
+                            class="form-input" 
+                            placeholder="Ej: golden-retriever"
+                            required
+                            aria-required="true"
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subBreeds" class="form-label">Sub-razas (separadas por comas)</label>
+                        <input 
+                            type="text" 
+                            id="subBreeds" 
+                            class="form-input" 
+                            placeholder="Ej: english, american"
+                        />
+                        <small class="form-hint">Separa múltiples sub-razas con comas</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            Guardar
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancelBtn" style="display: none;">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Búsqueda y filtros -->
+            <section class="crud-search-section">
+                <div class="search-container">
+                    <label for="crudSearchInput" class="search-label">Buscar razas guardadas</label>
+                    <input 
+                        type="text" 
+                        id="crudSearchInput" 
+                        class="search-input" 
+                        placeholder="Buscar por nombre o sub-raza..."
+                    />
+                </div>
+            </section>
+
+            <!-- Lista de razas guardadas -->
+            <section class="crud-list-section" id="crudListSection">
+                <h2 class="section-title">Razas Guardadas</h2>
+                <div id="breedsList" class="breeds-list">
+                    <!-- Las razas se cargarán aquí dinámicamente -->
+                </div>
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <p>No hay razas guardadas. ¡Agrega tu primera raza usando el formulario!</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Task 2 - Dog API Challenge</p>
+        </div>
+    </footer>
+    <script type="module" src="../dist/page/crud.js"></script>
+</body>
+</html>
+
