@@ -6,6 +6,16 @@ interface Card {
     isMatched: boolean; // Si está emparejada
 }
 
+// Interfaz para los datos de clasificación
+interface LeaderboardEntry {
+    name: string;
+    time: number; // Tiempo en segundos
+    moves: number;
+    score: number;
+    difficulty: Difficulty;
+    date: string; // Fecha en formato ISO
+}
+
 // Niveles de dificultad
 type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -453,13 +463,13 @@ function checkGameWin(): void {
         // Calcula la puntuación final
         calculateFinalScore();
         
-        // Muestra mensaje de victoria
+        // Muestra mensaje de victoria con input para nombre
         const config = getCurrentDifficulty();
         const minutes = Math.floor(gameState.time / 60);
         const seconds = gameState.time % 60;
         const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         
-        showMessage(
+        showMessageWithNameInput(
             `¡FELICIDADES!\n` +
             `Completaste el nivel ${config.name}\n` +
             `${timeStr} | ${gameState.moves} movimientos | ${gameState.score.toLocaleString()} puntos`
@@ -629,13 +639,195 @@ function clearMessage(): void {
     if (messageArea) {
         messageArea.textContent = '';
         messageArea.classList.remove('show');
+        // Limpia cualquier input que pueda haber quedado
+        const inputContainer = messageArea.querySelector('.player-name-input-container');
+        if (inputContainer) {
+            inputContainer.remove();
+        }
     }
+}
+
+/**
+ * Muestra un mensaje con input para el nombre del jugador
+ */
+function showMessageWithNameInput(message: string): void {
+    const messageArea = document.getElementById('messageArea');
+    if (!messageArea) return;
+    
+    // Limpia contenido anterior
+    messageArea.innerHTML = '';
+    
+    // Crea el mensaje
+    const messageText = document.createElement('div');
+    messageText.textContent = message;
+    messageText.style.whiteSpace = 'pre-line';
+    messageArea.appendChild(messageText);
+    
+    // Crea el contenedor del input
+    const inputContainer = document.createElement('div');
+    inputContainer.className = 'player-name-input-container';
+    
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'player-name-input';
+    nameInput.placeholder = 'Ingresa tu nombre';
+    nameInput.maxLength = 20;
+    nameInput.autofocus = true;
+    
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-save-score';
+    saveBtn.textContent = 'Guardar Puntuación';
+    
+    // Maneja el guardado
+    const handleSave = () => {
+        const playerName = nameInput.value.trim() || 'Jugador';
+        if (playerName.length > 0) {
+            saveLeaderboardEntry({
+                name: playerName,
+                time: gameState.time,
+                moves: gameState.moves,
+                score: gameState.score,
+                difficulty: gameState.difficulty,
+                date: new Date().toISOString()
+            });
+            clearMessage();
+        }
+    };
+    
+    saveBtn.addEventListener('click', handleSave);
+    nameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleSave();
+        }
+    });
+    
+    inputContainer.appendChild(nameInput);
+    inputContainer.appendChild(saveBtn);
+    messageArea.appendChild(inputContainer);
+    messageArea.classList.add('show');
+}
+
+/**
+ * Guarda una entrada en la clasificación
+ */
+function saveLeaderboardEntry(entry: LeaderboardEntry): void {
+    const leaderboard = getLeaderboard();
+    leaderboard.push(entry);
+    // Ordena por puntuación descendente
+    leaderboard.sort((a, b) => b.score - a.score);
+    // Mantiene solo las top 50
+    const topLeaderboard = leaderboard.slice(0, 50);
+    localStorage.setItem('memoryGameLeaderboard', JSON.stringify(topLeaderboard));
+}
+
+/**
+ * Obtiene la clasificación desde localStorage
+ */
+function getLeaderboard(): LeaderboardEntry[] {
+    const stored = localStorage.getItem('memoryGameLeaderboard');
+    if (stored) {
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            console.error('Error al leer la clasificación:', e);
+            return [];
+        }
+    }
+    return [];
+}
+
+/**
+ * Abre el modal de clasificación
+ */
+function openLeaderboardModal(): void {
+    const modal = document.getElementById('leaderboardModal');
+    if (modal) {
+        modal.classList.add('show');
+        renderLeaderboardTable();
+    }
+}
+
+/**
+ * Cierra el modal de clasificación
+ */
+function closeLeaderboardModal(): void {
+    const modal = document.getElementById('leaderboardModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+/**
+ * Renderiza la tabla de clasificación
+ */
+function renderLeaderboardTable(): void {
+    const tbody = document.getElementById('leaderboardTableBody');
+    if (!tbody) return;
+    
+    const leaderboard = getLeaderboard();
+    // Ordena por puntuación descendente (mejor puntuación primero)
+    leaderboard.sort((a, b) => b.score - a.score);
+    
+    // Limpia el tbody
+    tbody.innerHTML = '';
+    
+    if (leaderboard.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 5;
+        cell.textContent = 'No hay puntuaciones guardadas aún';
+        cell.style.textAlign = 'center';
+        cell.style.padding = '2rem';
+        cell.style.color = 'var(--text-light)';
+        row.appendChild(cell);
+        tbody.appendChild(row);
+        return;
+    }
+    
+    leaderboard.forEach((entry, index) => {
+        const row = document.createElement('tr');
+        
+        // Posición
+        const posCell = document.createElement('td');
+        posCell.textContent = (index + 1).toString();
+        posCell.style.fontWeight = index < 3 ? '800' : '600';
+        row.appendChild(posCell);
+        
+        // Nombre
+        const nameCell = document.createElement('td');
+        nameCell.textContent = entry.name;
+        row.appendChild(nameCell);
+        
+        // Tiempo
+        const timeCell = document.createElement('td');
+        const minutes = Math.floor(entry.time / 60);
+        const seconds = entry.time % 60;
+        timeCell.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        row.appendChild(timeCell);
+        
+        // Movimientos
+        const movesCell = document.createElement('td');
+        movesCell.textContent = entry.moves.toString();
+        row.appendChild(movesCell);
+        
+        // Puntuación
+        const scoreCell = document.createElement('td');
+        scoreCell.textContent = entry.score.toLocaleString();
+        scoreCell.style.fontWeight = '800';
+        scoreCell.style.color = 'var(--orange-light)';
+        row.appendChild(scoreCell);
+        
+        tbody.appendChild(row);
+    });
 }
 
 // Inicialización del juego
 function init(): void {
     const newGameBtn = document.getElementById('newGameBtn');
     const difficultySelect = document.getElementById('difficultySelect') as HTMLSelectElement;
+    const leaderboardBtn = document.getElementById('leaderboardBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const leaderboardModal = document.getElementById('leaderboardModal');
     
     // Configura el botón de nuevo juego
     if (newGameBtn) {
@@ -653,6 +845,36 @@ function init(): void {
             initGame(); // Reinicia el juego con la nueva dificultad
         });
     }
+    
+    // Configura el botón de clasificación
+    if (leaderboardBtn) {
+        leaderboardBtn.addEventListener('click', () => {
+            openLeaderboardModal();
+        });
+    }
+    
+    // Configura el botón de cerrar modal
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            closeLeaderboardModal();
+        });
+    }
+    
+    // Cierra el modal al hacer clic fuera de él
+    if (leaderboardModal) {
+        leaderboardModal.addEventListener('click', (e) => {
+            if (e.target === leaderboardModal) {
+                closeLeaderboardModal();
+            }
+        });
+    }
+    
+    // Cierra el modal con la tecla Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeLeaderboardModal();
+        }
+    });
     
     // Inicia el juego automáticamente
     initGame();
