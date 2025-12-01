@@ -1,9 +1,6 @@
 # Dependencias
 node_modules/
 
-# Archivos compilados (opcional, Netlify puede compilarlos)
-# dist/
-
 # Archivos del sistema
 .DS_Store
 Thumbs.db

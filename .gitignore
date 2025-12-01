@@ -2,10 +2,6 @@
 node_modules/
 **/node_modules/
 
-# Compiled files
-dist/
-**/dist/
-
 # System files
 .DS_Store
 Thumbs.db
